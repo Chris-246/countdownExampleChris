@@ -1,25 +1,74 @@
+import React from 'react';
+import DatePicker from 'react-datepicker';
+
 import logo from './logo.svg';
 import './App.css';
+import 'react-datepicker/dist/react-datepicker.css'
+class App extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      distance: 0,
+      endDate: new Date()
+    }
+  }
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  componentDidMount() {
+    this.startInterval()
+  }
+
+  startInterval = () => {
+    console.log(new Date());
+    let that = this;
+    const second = 1000, minute = second * 60, hour = minute * 60, day = hour * 24
+    let x = setInterval(function () {
+      that.setState({
+        distance: that.state.endDate.getTime() - new Date().getTime()
+      })
+      if (that.state.distance > 0) {
+        document.getElementById("days").innerText = that.format(Math.floor(that.state.distance / day))
+        document.getElementById("hours").innerText = that.format(Math.floor((that.state.distance % day) / hour))
+        document.getElementById("minutes").innerText = that.format(Math.floor((that.state.distance % hour) / minute))
+        document.getElementById("seconds").innerText = that.format(Math.floor((that.state.distance % minute) / second))
+      }
+    }, second)
+  }
+
+  format = (value) => {
+    return value < 10 ? "0"+value : value
+  }
+
+  handleChange = e => {
+    this.setState({endDate : e})
+  }
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 id="head">React Countdown</h1>
+        </header>
+
+      <div className="margin">
+        <DatePicker
+          className="form-control"
+          selected={this.state.endDate}
+          dateFormat="EEEE, MM d, yyyy"
+          onChange={(e) => this.handleChange(e)}
+        />
+      </div>
+
+        <div id="countdown">
+          <ul>
+            <li><span id="days">00</span>Days</li>
+            <li><span id="hours">00</span>Hours</li>
+            <li><span id="minutes">00</span>Minutes</li>
+            <li><span id="seconds">00</span>Seconds</li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
